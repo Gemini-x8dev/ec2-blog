@@ -70,10 +70,10 @@ WORKDIR /var/www/app
 COPY --chown=www-data:www-data . ./
 COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
 
-RUN find * -type d -exec chmod 755 {} \; && \
-    find * -type d -exec chmod ug+s {} \; && \
-    find * -type f -exec chmod 644 {} \; && \
-    chmod -R ug+rwx storage bootstrap/cache
+#RUN find * -type d -exec chmod 755 {} \; && \
+#    find * -type d -exec chmod ug+s {} \; && \
+#    find * -type f -exec chmod 644 {} \; && \
+#    chmod -R ug+rwx storage bootstrap/cache
 
 FROM nginx:latest AS web
 
