@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <button class="btn btn-secondary">Add post</button>
                 </div>
             </div>
         </div>
