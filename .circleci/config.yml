@@ -34,5 +34,7 @@ workflows:
     - build:
         context: amazon-ecr
         filters:
+          tags:
+            only: /^v.*/
           branches:
-            only: master
+            ignore: /.*/
