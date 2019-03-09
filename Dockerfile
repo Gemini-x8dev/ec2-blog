@@ -65,20 +65,20 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY ./php.ini $PHP_INI_DIR/conf.d/local.ini
 
-WORKDIR /var/www/app
+WORKDIR /usr/share/nginx/html
 
 COPY --chown=www-data:www-data . ./
 COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
 
-#RUN find * -type d -exec chmod 755 {} \; && \
-#    find * -type d -exec chmod ug+s {} \; && \
-#    find * -type f -exec chmod 644 {} \; && \
-#    chmod -R ug+rwx storage bootstrap/cache
+RUN find * -type d -exec chmod 755 {} \; && \
+    find * -type d -exec chmod ug+s {} \; && \
+    find * -type f -exec chmod 644 {} \; && \
+    chmod -R ug+rwx storage bootstrap/cache
 
 FROM nginx:latest AS web
 
 COPY ./site.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /var/www/app
+WORKDIR /usr/share/nginx/html/public
 
 COPY ./public ./
