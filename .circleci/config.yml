@@ -34,12 +34,5 @@ workflows:
     - build:
         context: amazon-ecr
         filters:
-          tags:
-            only: /^v.*/
-          branches:
-            ignore: /.*/
-    - build-staging:
-        context: amazon-ecr
-        filters:
           branches:
             only: master
