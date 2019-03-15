@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@0.1.1
   aws-ecr: circleci/aws-ecr@3.0.0
+  kubernetes: circleci/kubernetes@0.1.0
 
 jobs:
   build:
@@ -17,12 +18,65 @@ jobs:
     - run:
         name: Build Docker images
         command: |
-          docker build -t $AWS_ECR_ACCOUNT_URL/ec2-blog-fpm:latest -t $AWS_ECR_ACCOUNT_URL/ec2-blog-fpm:$CIRCLE_SHA1 --target app .
-          docker build -t $AWS_ECR_ACCOUNT_URL/ec2-blog-web:latest -t $AWS_ECR_ACCOUNT_URL/ec2-blog-web:$CIRCLE_SHA1 --target web .
+          docker build -t $AWS_ECR_ACCOUNT_URL/fayzlab-fpm:latest -t $AWS_ECR_ACCOUNT_URL/fayzlab-fpm:$CIRCLE_SHA1 --target app .
+          docker build -t $AWS_ECR_ACCOUNT_URL/fayzlab-web:latest -t $AWS_ECR_ACCOUNT_URL/fayzlab-web:$CIRCLE_SHA1 --target web .
     - run:
         name: Push images to Amazon ECR
         command: |
-          docker push $AWS_ECR_ACCOUNT_URL/ec2-blog-fpm:latest
-          docker push $AWS_ECR_ACCOUNT_URL/ec2-blog-fpm:$CIRCLE_SHA1
-          docker push $AWS_ECR_ACCOUNT_URL/ec2-blog-web:latest
-          docker push $AWS_ECR_ACCOUNT_URL/ec2-blog-web:$CIRCLE_SHA1
+          docker push $AWS_ECR_ACCOUNT_URL/fayzlab-fpm:latest
+          docker push $AWS_ECR_ACCOUNT_URL/fayzlab-fpm:$CIRCLE_SHA1
+          docker push $AWS_ECR_ACCOUNT_URL/fayzlab-web:latest
+          docker push $AWS_ECR_ACCOUNT_URL/fayzlab-web:$CIRCLE_SHA1
+  deploy:
+    docker:
+    - image: circleci/python
+    steps:
+    - kubernetes/install
+
+  deploy-staging:
+    docker:
+    - image: circleci/python
+    steps:
+    - kubernetes/install
+#    - run:
+#        name: Load cluster configuration into kubectl
+#        command: |
+#          kops export kubecfg --name $KOPS_CLUSTER_NAME
+#    - run:
+#        name: Update images on deployments
+#        command: |
+#          kubectl set image deployment/fpm fpm=$AWS_ECR_ACCOUNT_URL/fayzlab-fpm:$CIRCLE_SHA1 --namespace=fayzlab
+#          kubectl set image deployment/web web=$AWS_ECR_ACCOUNT_URL/fayzlab-web:$CIRCLE_SHA1 --namespace=fayzlab
+workflows:
+  version: 2
+  main:
+    jobs:
+    - build:
+        context: amazon-ecr
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
+    - build:
+        name: build-staging
+        context: amazon-ecr
+        filters:
+          branches:
+            only: staging
+    - deploy:
+        context: kops
+        requires:
+        - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
+    - deploy-staging:
+        context: kops
+        requires:
+        - build-staging
+        filters:
+          branches:
+            only: staging
