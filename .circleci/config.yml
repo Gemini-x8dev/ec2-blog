@@ -38,15 +38,15 @@ jobs:
     - image: circleci/python
     steps:
     - kubernetes/install
-#    - run:
-#        name: Load cluster configuration into kubectl
-#        command: |
-#          kops export kubecfg --name $KOPS_CLUSTER_NAME
-#    - run:
-#        name: Update images on deployments
-#        command: |
-#          kubectl set image deployment/fpm fpm=$AWS_ECR_ACCOUNT_URL/fayzlab-fpm:$CIRCLE_SHA1 --namespace=fayzlab
-#          kubectl set image deployment/web web=$AWS_ECR_ACCOUNT_URL/fayzlab-web:$CIRCLE_SHA1 --namespace=fayzlab
+    - run:
+        name: Load cluster configuration into kubectl
+        command: |
+          kops export kubecfg --name $KOPS_CLUSTER_NAME
+    - run:
+        name: Update images on deployments
+        command: |
+          kubectl set image deployment/fpm fpm=$AWS_ECR_ACCOUNT_URL/fayzlab-fpm:$CIRCLE_SHA1 --namespace=fayzlab
+          kubectl set image deployment/web web=$AWS_ECR_ACCOUNT_URL/fayzlab-web:$CIRCLE_SHA1 --namespace=fayzlab
 workflows:
   version: 2
   main:
