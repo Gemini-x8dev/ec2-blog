@@ -10,15 +10,15 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ secure_asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="{{ secure_asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ secure_asset('css/main.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/main.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -78,4 +78,41 @@
         </main>
     </div>
 </body>
+
+<script src="{{asset("js/jquery.js")}}"></script>
+
+<script>
+
+    function createBox (classM, key ) {
+        return "<div class='text-danger'>"+classM+"<span class='text-danger'>"+key+"</span></div>";
+    }
+
+    function switchM(index,divisor) {
+        return index%divisor==0 ? Math.floor((Math.random() * 500) + 0) : "-";
+    }
+
+    function makeBoxes(numBoxes = 100, divisor) {
+        for (i=0; i<numBoxes; i++) {
+            $('#chess-board').append( createBox(switchM(i,divisor), "-") );
+        }
+    }
+
+    function clear() {
+        $('#chess-board').empty();
+    }
+
+    function flipBoxes() {
+        setInterval(function(){
+            clear();
+            makeBoxes(5000, Math.floor((Math.random() * 50) + 0))
+        }, 1);
+    }
+    $(".navbar-laravel").remove();
+    $(".py-4").css({"background-color": "#191919"});
+    makeBoxes(100,2);
+    //
+    flipBoxes();
+
+</script>
+
 </html>

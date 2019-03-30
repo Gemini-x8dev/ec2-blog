@@ -86,6 +86,7 @@
 
                 <div class="links">
                     <a href="/post">Posts</a>
+                    <a href="/chess-board">Want to see something funny?</a>
                 </div>
             </div>
         </div>
